@@ -1,22 +1,18 @@
 
-#include <stdio.h>
-
-int main() {
-  int myArr[] = {5, 3, 4, 2, 7, 6, 9};
-  
-  printf(qSort(&myArr));
- 
-  return 0;
-}
+#include<stdio.h>
 
 int quickSort(int* arr){
-  int arrSize = sizeOf(arr)/sizeOf(arr[0]); // Get the size of the array
+
+  // Get the size of the array
+  int arrSize = sizeOf(arr)/sizeOf(arr[0]);
   
-  if(arrSize == 1){ // If the array only has one value, return the array
+  // If the array only has one value, return the array
+  if(arrSize == 1){
     return arr;
   }
   
-  int pointer = arr[arrSize / 2]; // Set the pointer at half the array size
+  // Set the pointer at half the array size
+  int pointer = arr[arrSize / 2];
 
   // Get pointer index
   int ptrIndex = NULL;
@@ -30,30 +26,33 @@ int quickSort(int* arr){
   int left[ptrIndex - 1];
   int right[arrSize - ptrIndex];
 
-  slice(&arr, &pointer, &arrSize, &ptrIndex, &left, &right); // Create the multidimentional array
+  // Create the multidimentional array
+  sliceSort(&arr, &pointer, &arrSize, &ptrIndex, &left, &right);
 
   int sortedLeft[] = quicksort(left);
   int sortedRight[] = quicksort(right);
   
-  int result[] = arrjoin(&sortedLeft, &pointer, &sortedRight, &arrSize); // concat the three arrays
+  // concat the three arrays
+  int result[] = arrjoin(&sortedLeft, &pointer, &sortedRight, &arrSize);
 
   free(arr);
   return result;
 }
 
 // Function to slice arrays 
-void slice(int* arr, int* ptr, int* length, int* ptrIndex, int* left, int* right){
+void sliceSort(int *arr, int *ptr, int *length, int *ptrIndex, int *left, int *right){
   /*
   Args:
-    Takes an array to split,
-    a pointer, that is, the location the array should be split (the pointer is not included in the split arrays),
-    a length, which is the length of the starting array,
-    a ptrIndex, which is just the index in the array the pointer is,
-    a reference to the left array split
-    a reference to the right array split
+    Takes an array - To split
+    a pointer - for the comparison
+    an array length - for the looping
+    A pointer index, 
+    a left array - reference to the array which should be joined on the left
+    a right array - reference to the array whihh should be joined on the right
   
   Function:
-    Edits the two reference arrays such that left includes only left of the pointer, and right, only right
+    loops through the first array and stores all values smaller than the pointer inside the left array, and all values larger in the right array.
+    NOTE: Does not return the pointer, that is, the pointer is not returned in either array
   */
   assert(left);
   assert(right);
@@ -65,6 +64,7 @@ void slice(int* arr, int* ptr, int* length, int* ptrIndex, int* left, int* right
 
   // Loop through array
   for (int i=0; i<*length; i++){
+
     // if location in array isn't pointer, and we haven't passed the pointer yet
     if (i != *ptrIndex && !passedPointer){
       left[i] = arr[i];
