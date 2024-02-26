@@ -1,7 +1,109 @@
-
 #include<stdio.h>
 #include<assert.h>
 #include<stdlib.h>
+
+void sliceSort(int *arr, int ptr, int length, int *left, int *right);
+int *arrJoin(int *array1, int lenArr1, int pivot, int *array2, int lenArr2);
+int quickSort(int *arr, int arrSize, int *sortedArr);
+
+int main(){
+  int arr[] = {2, 4, 3, 7, 5, 19, 20, 32, 45, 12, 31, 1};
+
+  int arrSize = sizeof(arr)/sizeof(arr[0]);
+
+  int *sortedArr = malloc(sizeof(arr));
+  quickSort(arr, arrSize, sortedArr);
+
+  for(int i=0; i<arrSize; i++){
+    printf("%d\n", sortedArr[i]);
+  }
+
+  free(sortedArr);
+  return 0;
+}
+
+int quickSort(int *arr, int arrSize, int *sortedArr){
+  // If the array only has one value, return the array
+  if(arrSize == 1){
+    sortedArr[0] = arr[0];
+    return 1;
+  }
+
+  else if (arrSize <= 0){
+    return 1;
+  }
+  // If the array only has two values
+  else if(arrSize == 2){
+
+    // If the first element is lager than the second, swap them
+    if (arr[0] > arr[1]){
+      sortedArr[0] = arr[1];
+      sortedArr[1] = arr[0];
+      return 1;
+    }
+    // If the second element is larger than the first, return the arr (as it is ordered already)
+    else{
+      sortedArr[0] = arr[0];
+      sortedArr[1] = arr[1];
+      return 1;
+    }
+  }
+  // Set the pivot as the median val in arr
+  int largestInArr = 0;
+  for (int i = 0; i<arrSize-1; i++){
+    // If the current element is larger than the next, and the value in largestIntArr. Or it is the last element in the array
+    if ((arr[i] > arr[i+1] && arr[i] > largestInArr) || i+1 == arrSize){
+      largestInArr = arr[i];
+    }
+  }
+  // Make pivot the value closest to the middle of array
+  int pivot = arr[0];
+
+  // Mid value
+  int mid = largestInArr / 2;
+
+  for (int i = 1; i<arrSize; i++){
+    // Check if the current value is closer to the mid value than the current pivot
+    if (abs(arr[i] - mid) < abs(pivot - mid)){
+      pivot = arr[i];
+    }
+  }
+
+  // Get sizes of both arrays
+  int lenLeft = 0;
+  int lenRight = 0;
+//  printf("%d\n", lenLeft);
+  // Loop through array and increase the value of left and right size relaive to the size of value
+  for (int i = 0; i<arrSize; i++){
+    if (arr[i] < pivot){
+      lenLeft++;
+    }else if (arr[i] > pivot){
+      lenRight++;
+    }else{
+      continue;
+    }
+  }
+  int *left = malloc(lenLeft * sizeof(int));
+  int *right = malloc(lenRight * sizeof(int));
+  // Create the multidimentional array
+  sliceSort(arr, pivot, arrSize, left, right);
+
+  quickSort(left, lenLeft, left);
+  quickSort(right, lenRight, right);
+  
+  // concat the three arrays
+  int *result = arrJoin(left, lenLeft, pivot, right, lenRight);
+  assert(result);
+  for(int i=0; i<arrSize; i++){
+    sortedArr[i] = result[i];
+  }
+
+  free(left);
+  free(result);
+  free(right);
+  return 1;
+}
+
 
 // Function to slice arrays 
 void sliceSort(int *arr, int ptr, int length, int *left, int *right){
@@ -71,103 +173,4 @@ int *arrJoin(int *array1, int lenArr1, int pivot, int *array2, int lenArr2){
   }
 
   return joinedArr; // return the joined array
-}
-
-void quickSort(int *arr, int arrSize, int *sortedArr){
-  
-  // create new array pivot
-  // int *sortedArr = malloc(sizeof(arr));
-
-  // If the array only has one value, return the array
-  if(arrSize == 1){
-    sortedArr[0] = arr[0];
-  }
-  // If the array only has two values
-  else if(arrSize == 2){
-
-    // If the first element is lager than the second, swap them
-    if (arr[0] > arr[1]){
-      sortedArr[0] = arr[1];
-      sortedArr[1] = arr[0];
-    }
-    // If the second element is larger than the first, return the arr (as it is ordered already)
-    else{
-      sortedArr[0] = arr[0];
-      sortedArr[1] = arr[1];
-    }
-  }
-  // Set the pivot as the median val in arr
-  int largestInArr = 0;
-  for (int i = 0; i<arrSize-1; i++){
-    // If the current element is larger than the next, and the value in largestIntArr. Or it is the last element in the array
-    if ((arr[i] > arr[i+1] && arr[i] > largestInArr) || i+1 == arrSize){
-      largestInArr = arr[i];
-    }
-  }
-  // Make pivot the value closest to the middle of array
-  int pivot = arr[0];
-
-  // Mid value
-  int mid = largestInArr / 2;
-
-  for (int i = 1; i<arrSize; i++){
-    // Check if the current value is closer to the mid value than the current pivot
-    if (abs(arr[i] - mid) < abs(pivot - mid)){
-      pivot = arr[i];
-    }
-  }
-
-  // Get sizes of both arrays
-  int lenLeft = 0;
-  int lenRight = 0;
-
-  // Loop through array and increase the value of left and right size relaive to the size of value
-  for (int i = 0; i<arrSize; i++){
-    if (arr[i] < pivot){
-      lenLeft++;
-    }else if (arr[i] > pivot){
-      lenRight++;
-    }else{
-      continue;
-    }
-  }
-
-  int *left = malloc(lenLeft * sizeof(int));
-  int *right = malloc(lenRight * sizeof(int));
-
-  // Create the multidimentional array
-  sliceSort(arr, pivot, arrSize, left, right);
-
-  quickSort(left, lenLeft, left);
-  quickSort(right, lenRight, right);
-  
-  // concat the three arrays
-  int *result = arrJoin(left, lenLeft, pivot, right, lenRight);
-  assert(result);
-  for(int i=0; i<arrSize; i++){
-    sortedArr[i] = result[i];
-  }
-
-  free(left);
-  free(result);
-  free(right);
-  // free(sortedLeft);
-  // free(sortedRight);
-}
-
-int main(){
-
-  int arr[] = {2, 1, 3, 5, 4, 7,  9, 15, 3};
-
-  int arrSize = sizeof(arr)/sizeof(arr[0]);
-
-  int *sortedArr = malloc(sizeof(arr));
-  quickSort(arr, arrSize, sortedArr);
-
-  for(int i=0; i<arrSize; i++){
-    printf("%d\n", sortedArr[i]);
-  }
-
-  free(sortedArr);
-  return 0;
 }
