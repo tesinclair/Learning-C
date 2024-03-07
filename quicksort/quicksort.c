@@ -6,6 +6,7 @@ void sliceSort(int *arr, int ptr, int length, int *left, int *right);
 int *arrJoin(int *array1, int lenArr1, int pivot, int *array2, int lenArr2);
 int quickSort(int *arr, int arrSize, int *sortedArr);
 
+// For testing
 int main(){
   int arr[] = {2, 4, 3, 7, 5, 19, 20, 32, 45, 12, 31, 1};
 
